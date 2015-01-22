@@ -10,6 +10,7 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
+local vicious = require("vicious")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -38,12 +39,16 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+-- beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+beautiful.init("~/.config/awesome/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "xterm"
-editor = os.getenv("EDITOR") or "nano"
-editor_cmd = terminal .. " -e " .. editor
+-- terminal = "xterm"
+terminal = "tilda"
+-- editor = os.getenv("EDITOR") or "nano"
+editor = os.getenv("EDITOR") or "vim"
+-- editor_cmd = terminal .. " -e " .. editor
+editor_cmd = "xterm -e " .. editor
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -62,20 +67,40 @@ local layouts =
     awful.layout.suit.tile.top,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
+--     awful.layout.suit.spiral,
+--     awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen,
+--    awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier
 }
 -- }}}
 
 -- {{{ Wallpaper
-if beautiful.wallpaper then
-    for s = 1, screen.count() do
-        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+-- if beautiful.wallpaper then
+--     for s = 1, screen.count() do
+--         gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+--     end
+-- end
+-- }}}
+
+-- {{{ Random Wallpapers
+
+-- Get the list of files from a directory. Must be all images or folders and non-empty. 
+function scanDir(directory)
+    local i, fileList, popen = 0, {}, io.popen
+    for filename in popen([[find "]] ..directory.. [[" -type f]]):lines() do
+        i = i + 1
+        fileList[i] = filename
     end
+    return fileList
 end
+wallpaperList = scanDir("/home/dc/Pictures/wallpapers")
+
+-- Apply a random wallpaper on startup.
+for s = 1, screen.count() do
+    gears.wallpaper.maximized(wallpaperList[math.random(1, #wallpaperList)], s, true)
+end
+
 -- }}}
 
 -- {{{ Tags
@@ -88,6 +113,13 @@ end
 -- }}}
 
 -- {{{ Menu
+-- Create a submenu for power options
+mypowermenu = {
+   { "Lock", "slock" }, 
+   { "Reboot", "reboot" },
+   { "Shut down", "/usr/bin/shutdown -h now" }
+}
+
 -- Create a laucher widget and a main menu
 myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
@@ -98,7 +130,10 @@ myawesomemenu = {
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
                                     { "open terminal", terminal },
-                                    { "Shut down", "/usr/bin/shutdown -h now" }
+                                    { "Firefox", "firefox" },
+                                    { "Google Chrome", "google-chrome-stable" },
+                                    { "Thunderbird", "thunderbird" },
+                                    { "Power", mypowermenu }
                                   }
                         })
 
@@ -112,6 +147,12 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- {{{ Wibox
 -- Create a textclock widget
 mytextclock = awful.widget.textclock()
+
+-- Memory widget
+-- Initialize widget
+-- memwidget = wibox.widget.textbox()
+-- Register widget
+-- vicious.register(memwidget, vicious.widgets.mem, "$1% ($2MB/$3MB)", 13)
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -192,6 +233,7 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+--    right_layout:add(memwidget)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
 
@@ -293,7 +335,10 @@ clientkeys = awful.util.table.join(
             c.maximized_horizontal = not c.maximized_horizontal
             c.maximized_vertical   = not c.maximized_vertical
         end),
-    awful.key({ }, "Print", function () awful.util.spawn("scrot -e 'mv $f ~/Pictures/screenshots/ 2>/dev/null'") end)
+    -- Print screen
+    awful.key({ }, "Print", function () awful.util.spawn("scrot -e 'mv $f ~/Pictures/screenshots/ 2>/dev/null'") end),
+    -- Lock screen
+    awful.key({ modkey }, "F12", function () awful.util.spawn("slock") end)
 )
 
 -- Bind all key numbers to tags.
@@ -367,9 +412,12 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
+    -- Set Firefox to always map on tag number 3 of screen 1.
+    { rule = { class = "Firefox" },
+      properties = { tag = tags[1][3] } },
+    -- Set Thunderbird to always map on tag number 1 of screen 2.
+    { rule = { class = "Thunderbird" },
+      properties = { tag = tags[2][1] } }
 }
 -- }}}
 

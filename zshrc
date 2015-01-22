@@ -6,6 +6,7 @@ unsetopt beep
 bindkey -v
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
+# Remember to change the following, if needed:
 zstyle :compinstall filename '/home/dc/.zshrc'
 
 autoload -Uz compinit
@@ -17,6 +18,7 @@ alias ll='ls -l'
 alias la='ls -la'
 alias vi='vim'
 alias cp='cp -iv'
+alias rm='rm -Iv'
 alias grep='grep --colour=auto'
 
 # Ctrl-r to search history
