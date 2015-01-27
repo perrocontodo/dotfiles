@@ -96,7 +96,7 @@ function scanDir(directory)
     end
     return fileList
 end
-wallpaperList = scanDir("/home/dc/Pictures/wallpapers")
+wallpaperList = scanDir("$HOME/Pictures/wallpapers")
 
 -- Apply a random wallpaper on startup.
 for s = 1, screen.count() do
@@ -492,9 +492,9 @@ awful.rules.rules = {
     -- Set Firefox to always map on tag number 3 of screen 1.
     { rule = { class = "Firefox" },
       properties = { tag = tags[1][3] } },
-    -- Set Thunderbird to always map on tag number 1 of screen 2.
+    -- Set Thunderbird to always map on tag number 1 of the last screen.
     { rule = { class = "Thunderbird" },
-      properties = { tag = tags[2][1] } }
+              properties = { tag = tags[screen.count()][1] }}
 }
 -- }}}
 
