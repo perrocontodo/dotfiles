@@ -11,7 +11,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local vicious = require("vicious")
--- Lain library
+-- Lain library (https://github.com/copycat-killer/lain)
 local lain = require("lain")
 
 -- {{{ Error handling
