@@ -11,6 +11,8 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local vicious = require("vicious")
+-- Lain library
+local lain = require("lain")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -43,11 +45,8 @@ end
 beautiful.init("~/.config/awesome/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
--- terminal = "xterm"
-terminal = "tilda"
--- editor = os.getenv("EDITOR") or "nano"
-editor = os.getenv("EDITOR") or "vim"
--- editor_cmd = terminal .. " -e " .. editor
+terminal = "tilda" or "xterm"
+editor = os.getenv("EDITOR") or "vim" or "nano"
 editor_cmd = "xterm -e " .. editor
 
 -- Default modkey.
@@ -56,6 +55,12 @@ editor_cmd = "xterm -e " .. editor
 -- I suggest you to remap Mod4 to another key using xmodmap or other tools.
 -- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
+
+-- Alt key
+altkey = "Mod1"
+
+-- Start Google Chrome on startup
+-- awful.util.spawn("google-chrome-stable")
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
@@ -67,10 +72,7 @@ local layouts =
     awful.layout.suit.tile.top,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
---     awful.layout.suit.spiral,
---     awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
---    awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier
 }
 -- }}}
@@ -108,7 +110,7 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+    tags[s] = awful.tag({ 1, 2, 3, 4, 5 }, s, layouts[1])
 end
 -- }}}
 
@@ -146,13 +148,65 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock()
+-- mytextclock = awful.widget.textclock()
 
--- Memory widget
--- Initialize widget
--- memwidget = wibox.widget.textbox()
--- Register widget
--- vicious.register(memwidget, vicious.widgets.mem, "$1% ($2MB/$3MB)", 13)
+white  = beautiful.fg_focus
+markup = lain.util.markup
+blue   = "#80CCE6"
+gray   = "#94928F"
+
+-- Textclock
+mytextclock = awful.widget.textclock(markup.font("Tamsyn 3", " ") .. markup(white, " %H:%M "))
+
+-- Calendar
+lain.widgets.calendar:attach(mytextclock, { cal = "/usr/bin/cal -m", fg = beautiful.fg_focus })
+
+-- Battery
+batwidget = lain.widgets.bat({
+    settings = function()
+        bat_header = " Bat "
+        bat_p      = bat_now.perc .. " "
+
+        if bat_now.status == "Not present" then
+            bat_header = ""
+            bat_p      = ""
+        end
+
+        widget:set_markup(markup(blue, bat_header) .. bat_p)
+    end
+})
+
+-- ALSA volume
+myvolumebar = lain.widgets.alsabar({
+    ticks  = true,
+    width  = 80,
+    height = 10,
+    colors = {
+        background = "#383838",
+        unmute     = "#80CCE6",
+        mute       = "#FF9F9F"
+    },
+    notifications = {
+        font      = "Tamsyn",
+        font_size = "12",
+        bar_size  = 32
+    }
+})
+
+volumewidget = lain.widgets.alsa({
+    settings = function()
+        header = " Vol "
+        vlevel  = volume_now.level
+
+        if volume_now.status == "off" then
+            vlevel = vlevel .. "M "
+        else
+            vlevel = vlevel .. " "
+        end
+
+        widget:set_markup(markup(blue, header) .. vlevel)
+    end
+})
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -226,14 +280,15 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
-    left_layout:add(mylauncher)
+--    left_layout:add(mylauncher)
     left_layout:add(mytaglist[s])
     left_layout:add(mypromptbox[s])
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
---    right_layout:add(memwidget)
+    right_layout:add(batwidget)
+    right_layout:add(volumewidget)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
 
@@ -338,7 +393,29 @@ clientkeys = awful.util.table.join(
     -- Print screen
     awful.key({ }, "Print", function () awful.util.spawn("scrot -e 'mv $f ~/Pictures/screenshots/ 2>/dev/null'") end),
     -- Lock screen
-    awful.key({ modkey }, "F12", function () awful.util.spawn("slock") end)
+    awful.key({ modkey }, "F12", function () awful.util.spawn("slock") end),
+
+    -- ALSA volume control
+    awful.key({ altkey }, "Up",
+        function ()
+            awful.util.spawn("amixer -q set " .. myvolumebar.channel .. " " .. myvolumebar.step .. "+")
+            myvolumebar.notify()
+        end),
+    awful.key({ altkey }, "Down",
+        function ()
+            awful.util.spawn("amixer -q set " .. myvolumebar.channel .. " " .. myvolumebar.step .. "-")
+            myvolumebar.notify()
+        end),
+    awful.key({ altkey }, "m",
+        function ()
+            awful.util.spawn("amixer -q set " .. myvolumebar.channel .. " playback toggle")
+            myvolumebar.notify()
+        end),
+    awful.key({ altkey, "Control" }, "m",
+        function ()
+            awful.util.spawn("amixer -q set " .. myvolumebar.channel .. " playback 100%")
+            myvolumebar.notify()
+        end)
 )
 
 -- Bind all key numbers to tags.
