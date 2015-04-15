@@ -28,6 +28,12 @@ set showcmd
 " Enable incremental search. Vim starts searching with 1st character
 set incsearch
 
+" Highlight matching [{()}]
+set showmatch
+
+" Highlight all the matches
+set hlsearch
+
 " Auto indent based on file type
 filetype plugin indent on
 
@@ -47,11 +53,11 @@ syntax on
 set background=dark
 
 " Use this color scheme
-let g:solarized_termtrans = 1
+"let g:solarized_termtrans = 1
 colorscheme solarized
 
 " Use this font when in GUI
-set guifont=Consolas:h12
+"set guifont=Consolas:h12
 
 " Remove the option to 'tear off' menus
 let &guioptions = substitute(&guioptions, "t", "", "g")
@@ -62,9 +68,9 @@ if has('mouse')
 endif
 
 " If GUI, enable highlighting during search
-if &t_Co > 2 || has("gui_running")
-  set hlsearch
-endif
+"if &t_Co > 2 || has("gui_running")
+"  set hlsearch
+"endif
 
 " Show long lines.
 "highlight LongLine guibg=red ctermbg=red
@@ -75,11 +81,11 @@ endif
 "set errorformat=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
 
 " Use F8 to open TagBar
-nmap <F8> :TagbarToggle<CR>
+"nmap <F8> :TagbarToggle<CR>
 
 " Set F2 to open a tab with the tag definition
-set tags+=~/tmp/tags
-map <F2> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
+"set tags+=~/tmp/tags
+"map <F2> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 "map <F2> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 "map <F2> :echo 'Current time is ' . strftime('%c')<CR>
 
@@ -102,3 +108,35 @@ set list listchars=tab:»·,trail:·
 
 set browsedir=buffer
 
+" Show where the 85th column is
+if (exists('+colorcolumn'))
+    set colorcolumn=85
+    highlight ColorColumn ctermbg=DarkBlue
+endif
+
+" In case we want to remove the highlighted column
+nnoremap <leader>c :highlight clear ColorColumn<CR>
+
+" Learn vim the right way
+nnoremap <up> <nop>
+nnoremap <down> <nop>
+nnoremap <left> <nop>
+nnoremap <right> <nop>
+inoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
+nnoremap j gj
+nnoremap k gk
+
+" Change modes with jj, instead of ESC
+inoremap jj <ESC>
+
+" Split with a vertical window, and go to it
+nnoremap <leader>w <C-w>v<C-w>l
+
+" Easier navigation between splits
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l

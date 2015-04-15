@@ -394,7 +394,8 @@ clientkeys = awful.util.table.join(
     awful.key({ }, "Print", function () awful.util.spawn("scrot -e 'mv $f ~/Pictures/screenshots/ 2>/dev/null'") end),
     -- Lock screen
     awful.key({ modkey }, "F12", function () awful.util.spawn("slock") end),
-
+    -- Start PCmanFM
+    awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn("/usr/bin/pcmanfm") end),
     -- ALSA volume control
     awful.key({ altkey }, "Up",
         function ()
