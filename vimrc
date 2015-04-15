@@ -5,6 +5,12 @@ set nocompatible
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
+" Make TAB expand to 4 spaces
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+
 " Use ~/tmp as swap file directory
 set dir=~/tmp
 
