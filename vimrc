@@ -1,3 +1,24 @@
+""""" Functions
+" Toggles between relative and normal line numbering
+function! NumberToggle()
+  if(&relativenumber == 1)
+    set number
+  else
+    set relativenumber
+  endif
+endfunc
+
+function! ShowColumn85 ()
+    if exists('+colorcolumn')
+        " Show column 85
+        if &colorcolumn == ""
+            set colorcolumn=85
+        else
+            set colorcolumn=
+        endif
+    endif
+endfunction
+
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
 set nocompatible
@@ -45,6 +66,12 @@ filetype plugin indent on
 
 " Show row numbers on the left
 set number
+
+" Call the function to toggle the line numbering mode
+"nnoremap <leader>r :call NumberToggle()<cr>
+
+" Set relative numbers for line numbering
+set relativenumber
 
 " Allow hidden buffers, don't limit to 1 file per window/split
 set hidden
@@ -121,7 +148,8 @@ if (exists('+colorcolumn'))
 endif
 
 " In case we want to remove the highlighted column
-nnoremap <leader>c :highlight clear ColorColumn<CR>
+"nnoremap <leader>c :highlight clear ColorColumn<CR>
+nnoremap <leader>c :call ShowColumn85()<CR>
 
 " Learn vim the right way
 nnoremap <up> <nop>
@@ -146,3 +174,4 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+
