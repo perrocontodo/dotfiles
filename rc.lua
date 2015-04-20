@@ -391,7 +391,10 @@ clientkeys = awful.util.table.join(
             c.maximized_vertical   = not c.maximized_vertical
         end),
     -- Print screen
-    awful.key({ }, "Print", function () awful.util.spawn("scrot -e 'mv $f ~/Pictures/screenshots/ 2>/dev/null'") end),
+    awful.key({ }, "Print",
+        function ()
+            awful.util.spawn("scrot -e 'mv $f ~/Pictures/screenshots/ 2>/dev/null'")
+        end),
     -- Lock screen
     awful.key({ modkey }, "F12", function () awful.util.spawn("slock") end),
     -- Start PCmanFM

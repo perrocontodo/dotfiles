@@ -131,6 +131,7 @@ inoremap <expr> ' strpart(getline('.'), col('.')-1, 1) == "\'" ? "\<Right>" : "\
 " Show status bar and set it up
 set laststatus=2
 set statusline=%F%m%r%h%w\ [%Y\ %{&ff}]\ \ [%l/%L]\ (%p%%)\ \ %c
+set statusline+=%=%{fugitive#statusline()}
 
 let mapleader = ","
 nnoremap <silent> <leader>n :nohlsearch<CR>
@@ -142,14 +143,15 @@ set list listchars=tab:»·,trail:·
 set browsedir=buffer
 
 " Show where the 85th column is
-if (exists('+colorcolumn'))
-    set colorcolumn=85
-    highlight ColorColumn ctermbg=DarkBlue
-endif
+"if (exists('+colorcolumn'))
+"    set colorcolumn=85
+"    highlight ColorColumn ctermbg=DarkBlue
+"endif
 
-" In case we want to remove the highlighted column
-"nnoremap <leader>c :highlight clear ColorColumn<CR>
-nnoremap <leader>c :call ShowColumn85()<CR>
+" Map ',c' to toggle showing the 85th column
+" and mark it blue
+nnoremap <silent> <leader>c :call ShowColumn85()<CR>
+highlight ColorColumn ctermbg=DarkBlue
 
 " Learn vim the right way
 nnoremap <up> <nop>
@@ -175,3 +177,26 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+" Maximize a split window
+nnoremap <leader>o <C-W><C-o>
+
+" Make Ctrl-c act as 'Clipboard-copy' in visual select mode
+vnoremap <C-c> "+y
+
+" maps NERDTree to F10
+" (normal, visual and operator-pending modes)
+noremap <silent> <F10> :NERDTreeToggle<CR>
+" (also in insert and command-line modes)
+noremap! <silent> <F10> <ESC>:NERDTreeToggle<CR>
+
+" YouCompleteMe configuraion file
+let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py"
+
+" Use Pathogen
+execute pathogen#infect()
+call pathogen#helptags()
+" Plugins installed with Pathogen:
+"   - fugitive
+"   - NERDTree
+"   - YouCompleteMe
+"   - MiniBufExpl
