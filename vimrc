@@ -87,7 +87,7 @@ set background=dark
 
 " Use this color scheme
 "let g:solarized_termtrans = 1
-colorscheme solarized
+"colorscheme solarized
 
 " Use this font when in GUI
 "set guifont=Consolas:h12
@@ -134,7 +134,7 @@ set statusline=%F%m%r%h%w\ [%Y\ %{&ff}]\ \ [%l/%L]\ (%p%%)\ \ %c
 set statusline+=%=%{fugitive#statusline()}
 
 let mapleader = ","
-nnoremap <silent> <leader>n :nohlsearch<CR>
+nnoremap <silent> <leader>h :nohlsearch<CR>
 map <C-l> <C-]>
 command! Q q
 
@@ -182,6 +182,13 @@ nnoremap <leader>o <C-W><C-o>
 
 " Make Ctrl-c act as 'Clipboard-copy' in visual select mode
 vnoremap <C-c> "+y
+
+" Ctrl-v as "Paste from clipboard'
+nnoremap <C-v> "+gP
+
+" Map ',n' and ',p' to 'next' and 'previous' buffers
+nnoremap <leader>n :bn<CR>
+nnoremap <leader>p :bp<CR>
 
 " maps NERDTree to F10
 " (normal, visual and operator-pending modes)

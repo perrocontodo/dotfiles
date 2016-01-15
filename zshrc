@@ -14,12 +14,14 @@ autoload -Uz compinit
 compinit
 
 # Alias
-alias ll='ls -l'
+alias ll='ls -l --color=auto'
 alias la='ls -la'
 alias vi='vim'
 alias cp='cp -iv'
 alias rm='rm -Iv'
 alias grep='grep --color=auto'
+alias terminator='terminator -T terminator'
+alias maxterm='terminator -m -T terminator'
 
 # Ctrl-r to search history
 bindkey '^R' history-incremental-search-backward
@@ -46,3 +48,13 @@ setopt correct
 
 # report time command lasted if takes more than 5 sec
 REPORTTIME=5
+
+autoload -Uz vcs_info
+zstyle ':vcs_info:git*' formats "%r/%S [%b] %m%u%c "
+zstyle ':vcs_info:*' enable git
+precmd() {
+    vcs_info
+}
+
+setopt prompt_subst
+RPROMPT='${vcs_info_msg_0_}%# '
